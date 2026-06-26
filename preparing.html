@@ -7,10 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f0e1a; --text: #e8e6f0; --text-dim: #5e5a78; --text-muted: #9490b0;
-    --prism-gradient: linear-gradient(135deg, #4f46e5, #7c3aed, #ec4899, #f59e0b);
-  }
+  :root { --bg: #0f0e1a; --text: #e8e6f0; --text-dim: #5e5a78; --text-muted: #9490b0; --prism-gradient: linear-gradient(135deg, #4f46e5, #7c3aed, #ec4899, #f59e0b); }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px; }
   body::before { content: ''; position: fixed; top: -30%; left: -20%; width: 70%; height: 70%; background: radial-gradient(ellipse, rgba(79,70,229,0.12) 0%, transparent 70%); pointer-events: none; }
@@ -19,7 +16,6 @@
   .label { font-size: 11px; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 24px; }
   .heading { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 6vw, 52px); font-weight: 300; font-style: italic; line-height: 1.3; margin-bottom: 24px; max-width: 560px; }
   .subtext { font-size: 15px; color: var(--text-muted); line-height: 1.75; max-width: 420px; }
-  .fearless { background: var(--prism-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .dots { display: flex; gap: 8px; justify-content: center; margin-top: 48px; }
   .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); animation: pulse 1.4s ease-in-out infinite; }
   .dot:nth-child(2) { animation-delay: 0.2s; }
@@ -35,12 +31,49 @@
     <circle cx="32" cy="4" r="2" fill="white" opacity="0.6"/>
   </svg>
   <p class="label">Your Prism Profile</p>
-  <h1 class="heading">Your profile is on its way.</h1>
-  <p class="subtext">Check your email in the next few minutes — your Prism profile will be waiting for you there.</p>
+  <h1 class="heading">Reading your pattern.</h1>
+  <p class="subtext">This takes just a moment.</p>
   <div class="dots">
     <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
   </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const submissionId = params.get('submissionId');
+
+    if (!submissionId) {
+      document.querySelector('.heading').textContent = 'Something went wrong.';
+      document.querySelector('.subtext').textContent = 'Please retake the assessment.';
+      document.querySelector('.dots').style.display = 'none';
+    } else {
+      let attempts = 0;
+      const maxAttempts = 30;
+
+      const poll = async () => {
+        try {
+          const res = await fetch(`/.netlify/functions/get-result?submissionId=${encodeURIComponent(submissionId)}`);
+          const data = await res.json();
+
+          if (data.ready && data.prismType) {
+            window.location.href = `/?type=${encodeURIComponent(data.prismType)}`;
+            return;
+          }
+        } catch (err) {}
+
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, 2000);
+        } else {
+          document.querySelector('.heading').textContent = 'Taking longer than expected.';
+          document.querySelector('.subtext').textContent = 'Check your email — your profile link will be waiting there.';
+          document.querySelector('.dots').style.display = 'none';
+        }
+      };
+
+      setTimeout(poll, 2000);
+    }
+  </script>
 </body>
 </html>
