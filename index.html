@@ -52,8 +52,6 @@
   .facet-card.superpower .facet-name { color: rgba(99,102,241,0.9); }
   .facet-card.shadow .facet-name { color: rgba(124,58,237,0.7); }
   .facet-text { font-size: 15px; line-height: 1.75; color: var(--text); font-weight: 300; }
-  .compassion { padding: 28px 36px; border-radius: 14px; background: linear-gradient(145deg, #1a1828, #1e1c2e); border-left: 3px solid rgba(236,72,153,0.4); margin-top: 4px; }
-  .compassion-text { font-family: 'Cormorant Garamond', serif; font-size: clamp(16px, 2vw, 20px); font-style: italic; font-weight: 300; line-height: 1.75; color: var(--text-muted); }
   .gifts-header { text-align: center; margin-bottom: 40px; }
   .gifts-title { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; font-style: italic; color: var(--text); margin-bottom: 8px; }
   .gifts-subtitle { font-size: 13px; color: var(--text-dim); font-weight: 300; }
@@ -84,7 +82,6 @@
     .scroll-hint, .action-buttons, .feedback-section { display: none; }
     .facet-card.superpower { background: #f5f5ff; border-left: 3px solid #4f46e5; }
     .facet-card.shadow { background: #f9f5ff; border-left: 3px solid #7c3aed; }
-    .compassion { background: #fff5f9; border-left: 3px solid #ec4899; }
     .type-name { -webkit-text-fill-color: #4f46e5; background: none; }
     .fearless { -webkit-text-fill-color: #7c3aed; background: none; }
     .gift-card { border: 1px solid #ddd; }
@@ -181,7 +178,7 @@
         }
       });
 
-      // Shadows + compassion
+      // Shadows
       const shContainer = document.getElementById('shadowsFacets');
       const shadows = [
         { name: f.Shadow1Name, text: f.Shadow1Text },
@@ -193,9 +190,6 @@
           shContainer.innerHTML += `<div class="facet-card shadow"><span class="facet-name">${sh.name}</span><p class="facet-text">${sh.text}</p></div>`;
         }
       });
-      if (f.Compassion) {
-        shContainer.innerHTML += `<div class="compassion"><p class="compassion-text">${f.Compassion} <span style="opacity:0.5;">Detailed advocacy report — coming soon</span></p></div>`;
-      }
 
       // Your world
       document.getElementById('careers').textContent = f.Careers || '';
