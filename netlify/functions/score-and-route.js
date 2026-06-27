@@ -14,20 +14,56 @@ function getPrimary(scores, subtypes) {
   return winner.split("_")[1];
 }
 
-function assignPrismType(s1, s3) {
-  const map = {
-    "Initiator-Concrete": "The Maker",
-    "Initiator-Abstract": "The Visionary",
-    "Initiator-Metaphorical": "The Spark",
-    "Initiator-Multidimensional": "The Catalyst",
-    "Sustainer-Concrete": "The Anchor",
-    "Sustainer-Multidimensional": "The Weaver",
-    "Adapter-Multidimensional": "The Navigator",
-    "Adapter-Metaphorical": "The Explorer",
-    "Pauser-Abstract": "The Architect",
-    "Pauser-Multidimensional": "The Distiller",
-  };
-  return map[`${s1}-${s3}`] || "The Navigator";
+// All 10 PrismTypes defined by their full 7-section subtype profile
+// S1, S3, S7 are primary dimensions (weight 2)
+// S2, S4, S5, S6 are supporting dimensions (weight 1)
+const PRISM_TYPES = {
+  "The Maker":     { S1:"Initiator",   S2:"Linear",          S3:"Concrete",         S4:"Seeker",    S5:"Steady",       S6:"Boundaried", S7:"Builder"    },
+  "The Visionary": { S1:"Initiator",   S2:"Associative",     S3:"Abstract",         S4:"Seeker",    S5:"Steady",       S6:"Interpreter",S7:"Experimenter"},
+  "The Spark":     { S1:"Initiator",   S2:"Symbolic",        S3:"Metaphorical",     S4:"Seeker",    S5:"Reactive",     S6:"Absorber",   S7:"Improviser" },
+  "The Catalyst":  { S1:"Initiator",   S2:"Associative",     S3:"Multidimensional", S4:"Seeker",    S5:"Reactive",     S6:"Absorber",   S7:"Improviser" },
+  "The Anchor":    { S1:"Sustainer",   S2:"Linear",          S3:"Concrete",         S4:"Filtered",  S5:"Steady",       S6:"Boundaried", S7:"Builder"    },
+  "The Weaver":    { S1:"Sustainer",   S2:"Layered",         S3:"Multidimensional", S4:"Sensitive", S5:"Reactive",     S6:"Absorber",   S7:"Integrator" },
+  "The Navigator": { S1:"Adapter",     S2:"Layered",         S3:"Multidimensional", S4:"Filtered",  S5:"Steady",       S6:"Boundaried", S7:"Integrator" },
+  "The Explorer":  { S1:"Adapter",     S2:"Symbolic",        S3:"Metaphorical",     S4:"Seeker",    S5:"Reactive",     S6:"DeepFeeler", S7:"Experimenter"},
+  "The Architect": { S1:"Pauser",      S2:"Linear",          S3:"Abstract",         S4:"Filtered",  S5:"Steady",       S6:"Interpreter",S7:"Builder"    },
+  "The Distiller": { S1:"Pauser",      S2:"Layered",         S3:"Multidimensional", S4:"Sensitive", S5:"Reactive",     S6:"Absorber",   S7:"Integrator" },
+};
+
+// Primary dimensions carry double weight in routing
+const PRIMARY_SECTIONS = ["S1", "S3", "S7"];
+const SUPPORTING_SECTIONS = ["S2", "S4", "S5", "S6"];
+
+function assignPrismType(s1, s2, s3, s4, s5, s6, s7) {
+  const actual = { S1:s1, S2:s2, S3:s3, S4:s4, S5:s5, S6:s6, S7:s7 };
+
+  // Layer 1 — exact match on primary dimensions S1, S3, S7
+  for (const [type, profile] of Object.entries(PRISM_TYPES)) {
+    if (profile.S1 === s1 && profile.S3 === s3 && profile.S7 === s7) {
+      return { type, layer: 1 };
+    }
+  }
+
+  // Layer 2 — nearest neighbour using all 7 sections
+  // Primary sections (S1, S3, S7) weighted at 2, supporting at 1
+  let bestType = null;
+  let bestScore = -1;
+
+  for (const [type, profile] of Object.entries(PRISM_TYPES)) {
+    let matchScore = 0;
+    for (const s of PRIMARY_SECTIONS) {
+      if (profile[s] === actual[s]) matchScore += 2;
+    }
+    for (const s of SUPPORTING_SECTIONS) {
+      if (profile[s] === actual[s]) matchScore += 1;
+    }
+    if (matchScore > bestScore) {
+      bestScore = matchScore;
+      bestType = type;
+    }
+  }
+
+  return { type: bestType, layer: 2 };
 }
 
 function getShadowLoad(scores) {
@@ -80,10 +116,10 @@ exports.handler = async function (event) {
     const s6 = getPrimary(scores, ["S6_Absorber","S6_DeepFeeler","S6_Boundaried","S6_Interpreter"]);
     const s7 = getPrimary(scores, ["S7_Integrator","S7_Improviser","S7_Experimenter","S7_Builder"]);
     const shadowLoad = getShadowLoad(scores);
-    const prismType = assignPrismType(s1, s3);
+    const { type: prismType, layer: routingLayer } = assignPrismType(s1, s2, s3, s4, s5, s6, s7);
 
     console.log(`S1=${s1} S2=${s2} S3=${s3} S4=${s4} S5=${s5} S6=${s6} S7=${s7}`);
-    console.log(`PrismType: ${prismType} | ShadowLoad: ${shadowLoad}`);
+    console.log(`PrismType: ${prismType} | Layer: ${routingLayer} | ShadowLoad: ${shadowLoad}`);
 
     const profileUrl = `${SITE_URL}/?type=${encodeURIComponent(prismType)}`;
 
@@ -116,7 +152,7 @@ exports.handler = async function (event) {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ prismType, s1, s2, s3, s4, s5, s6, s7, shadowLoad }),
+      body: JSON.stringify({ prismType, routingLayer, s1, s2, s3, s4, s5, s6, s7, shadowLoad }),
     };
 
   } catch (err) {
