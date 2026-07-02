@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Prism maps how you receive and process the world from the inside — and gives that experience language.">
+  <title>Prism — Fearless & Undefined</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080808; --text: #F2F0EB; --accent: #7B6EE8;
+      --teal: #2ABFAA; --rule: #1E1E1E;
+      --display: 'DM Serif Display', Georgia, serif;
+      --body: 'Inter', system-ui, sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 17px; line-height: 1.75; font-weight: 300; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 28px 48px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(to bottom, #080808ee 0%, transparent 100%); }
+    .nav-logo { font-family: var(--display); font-size: 20px; letter-spacing: 0.02em; background: linear-gradient(90deg, var(--accent), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: refract 2.4s ease forwards; text-decoration: none; }
+    @keyframes refract { 0% { filter: hue-rotate(0deg) brightness(1.4); } 60% { filter: hue-rotate(30deg) brightness(1.1); } 100% { filter: hue-rotate(0deg) brightness(1); } }
+    .nav-cta { font-family: var(--body); font-size: 13px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); text-decoration: none; border-bottom: 1px solid #3A3468; padding-bottom: 2px; transition: color 0.3s, border-color 0.3s; }
+    .nav-cta:hover { color: var(--teal); border-color: var(--teal); }
+    .hero-wrap { position: relative; overflow: hidden; }
+    #nebula { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .hero-wrap section { position: relative; z-index: 2; }
+    section { max-width: 720px; margin: 0 auto; padding: 72px 32px; }
+    section + section { border-top: 1px solid var(--rule); }
+    .opening { padding-top: 160px; padding-bottom: 80px; }
+    .eyebrow { font-family: var(--body); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text); margin-bottom: 40px; }
+    .display { font-family: var(--display); font-size: clamp(36px, 5.5vw, 58px); line-height: 1.15; font-weight: 400; letter-spacing: -0.01em; color: var(--text); margin-bottom: 32px; }
+    .opening .sub { font-size: 18px; line-height: 1.8; color: var(--text); max-width: 560px; margin-bottom: 24px; }
+    .opening .explainer { font-size: 15px; line-height: 1.7; color: var(--text); opacity: 0.65; max-width: 560px; margin-bottom: 48px; letter-spacing: 0.01em; }
+    .cta { display: inline-block; font-family: var(--body); font-size: 15px; font-weight: 400; letter-spacing: 0.04em; color: var(--text); text-decoration: none; border: 1px solid #3A3468; border-radius: 2px; padding: 14px 32px; transition: border-color 0.3s, background 0.3s; }
+    .cta::after { content: ' \2192'; color: var(--accent); }
+    .cta:hover { border-color: var(--accent); background: #7B6EE808; }
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 48px; }
+    .map-intro { font-family: var(--display); font-size: clamp(24px, 3.5vw, 34px); line-height: 1.3; color: var(--text); margin-bottom: 48px; }
+    .lenses { list-style: none; margin-bottom: 48px; }
+    .lenses li { font-family: var(--display); font-size: clamp(18px, 2.5vw, 22px); line-height: 1.6; color: var(--text); padding: 14px 0 14px 30px; position: relative; }
+    .lenses li::before { content: ''; position: absolute; left: 0; top: calc(14px + 0.8em); transform: translateY(-50%); width: 8px; height: 8px; border-radius: 50%; }
+    .lenses li:nth-child(1)::before { background: #7C6FE0; }
+    .lenses li:nth-child(2)::before { background: #5B8BD4; }
+    .lenses li:nth-child(3)::before { background: #3FA8A0; }
+    .lenses li:nth-child(4)::before { background: #4CAF6E; }
+    .map-close { font-size: 17px; line-height: 1.85; color: var(--text); }
+    .map-close em { font-family: var(--display); font-style: italic; }
+    .story p { font-size: 18px; line-height: 1.9; color: var(--text); margin-bottom: 28px; }
+    .story p:last-child { margin-bottom: 0; }
+    .story .pull { font-family: var(--display); font-size: clamp(22px, 3vw, 30px); line-height: 1.4; color: var(--text); font-style: italic; }
+    .story .pull-small { font-family: var(--display); font-size: clamp(18px, 2.5vw, 24px); line-height: 1.5; color: var(--text); font-style: italic; }
+
+    .luck-headline { font-family: var(--display); font-size: clamp(28px, 4vw, 44px); line-height: 1.2; color: var(--text); margin-bottom: 40px; }
+    .luck-headline span { background: linear-gradient(90deg, var(--accent), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .luck p { font-size: 17px; line-height: 1.85; color: var(--text); margin-bottom: 24px; }
+    .luck p:last-child { margin-bottom: 0; }
+    .not-mbti p { font-size: 17px; line-height: 1.85; color: var(--text); margin-bottom: 24px; }
+    .not-mbti p:last-child { margin-bottom: 0; }
+    .not-mbti .distinction { font-family: var(--display); font-size: clamp(18px, 2.5vw, 24px); line-height: 1.5; color: var(--text); font-style: italic; margin: 40px 0; padding-left: 24px; border-left: 1px solid var(--accent); }
+    .tag-row { display: flex; gap: 14px 36px; flex-wrap: wrap; margin-top: 40px; }
+    .tag { font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); opacity: 0.75; }
+    .tag.active { color: var(--teal); opacity: 1; }
+    .tag-note { font-size: 12px; line-height: 1.6; color: var(--text); opacity: 0.45; margin-top: 18px; letter-spacing: 0.02em; }
+    .goals { display: flex; flex-direction: column; }
+    .goal { padding: 40px 0; border-bottom: 1px solid var(--rule); }
+    .goal:first-child { border-top: 1px solid var(--rule); }
+    .goal-name { font-family: var(--display); font-size: 22px; color: var(--text); margin-bottom: 12px; }
+    .goal-desc { font-size: 16px; line-height: 1.75; color: var(--text); }
+    .footer-wrap { position: relative; overflow: hidden; border-top: 1px solid var(--rule); }
+    #refraction-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.35; }
+    footer { position: relative; z-index: 2; max-width: 720px; margin: 0 auto; padding: 60px 32px 80px; }
+    .footer-tagline { font-family: var(--display); font-size: clamp(18px, 2.5vw, 24px); line-height: 1.6; color: var(--text); margin-bottom: 40px; }
+    .footer-tagline .brand { background: linear-gradient(90deg, var(--accent), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .footer-cta { display: inline-block; font-family: var(--body); font-size: 15px; font-weight: 400; letter-spacing: 0.04em; color: var(--text); text-decoration: none; border: 1px solid #3A3468; border-radius: 2px; padding: 14px 32px; transition: border-color 0.3s, background 0.3s; }
+    .footer-cta::after { content: ' \2192'; color: var(--accent); }
+    .footer-cta:hover { border-color: var(--accent); background: #7B6EE808; }
+    .footer-bottom { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .footer-logo { font-family: var(--display); font-size: 15px; background: linear-gradient(90deg, var(--accent), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .footer-note { font-size: 12px; color: var(--accent); letter-spacing: 0.04em; }
+    .beta-note { font-size: 13px; color: var(--text); opacity: 0.5; margin-top: 20px; letter-spacing: 0.02em; }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .hero-logo { margin-bottom: 32px; display: flex; justify-content: center; }
+    .hero-logo svg { display: block; animation: logoFloat 5s ease-in-out infinite, logoShimmer 9s ease-in-out infinite; will-change: transform, filter; }
+    @keyframes logoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+    @keyframes logoShimmer { 0%, 100% { filter: hue-rotate(0deg) brightness(1); } 40% { filter: hue-rotate(34deg) brightness(1.3); } 70% { filter: hue-rotate(-16deg) brightness(1.1); } }
+    @media (max-width: 640px) { nav { padding: 24px; } section { padding: 56px 24px; } .opening { padding-top: 120px; padding-bottom: 60px; } footer { padding: 60px 24px 80px; } .footer-bottom { flex-direction: column; align-items: flex-start; } .ink-divider { height: 100px; } }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } .nav-logo { animation: none; } .hero-logo svg { animation: none; } }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-logo">Prism</a>
+    <a href="https://tally.so/r/EkXLWL" class="nav-cta" target="_blank" rel="noopener">Let's see my pattern</a>
+  </nav>
+
+  <div class="hero-wrap">
+    <canvas id="nebula"></canvas>
+    <section class="opening">
+      <div class="hero-logo reveal">
+        <svg width="480" height="340" viewBox="0 0 680 480" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="heroTriGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7C6FE0"/>
+              <stop offset="50%" stop-color="#3FA8A0"/>
+              <stop offset="100%" stop-color="#4CAF6E"/>
+            </linearGradient>
+            <linearGradient id="heroWordGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#7C6FE0"/>
+              <stop offset="50%" stop-color="#3FA8A0"/>
+              <stop offset="100%" stop-color="#4CAF6E"/>
+            </linearGradient>
+          </defs>
+          <polygon points="340,120 220,320 460,320" fill="none" stroke="url(#heroTriGrad)" stroke-width="2.5"/>
+          <text x="340" y="270" text-anchor="middle" font-family="Georgia, serif" font-size="46" fill="url(#heroWordGrad)">Prism</text>
+          <text x="340" y="390" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="14" letter-spacing="4" fill="#C9C9CC">FEARLESS &amp; UNDEFINED</text>
+        </svg>
+      </div>
+      <p class="eyebrow reveal">A non-clinical self-mapping tool</p>
+      <h1 class="display reveal">The way you experience the world is unique.</h1>
+      <p class="sub reveal">Prism maps that experience — and gives it language.</p>
+      <p class="explainer reveal">28 questions, honestly answered. A few quiet minutes — and your pattern is simply there.</p>
+      <a href="https://tally.so/r/EkXLWL" class="cta reveal" target="_blank" rel="noopener">Let's see my pattern</a>
+      <p class="beta-note reveal">Prism is in beta. You're early — and that matters to us.</p>
+    </section>
+  </div>
+
+  <section>
+    <p class="section-label reveal">The map</p>
+    <p class="map-intro reveal">There are many ways to hold that map.</p>
+    <ul class="lenses reveal">
+      <li>How you see yourself when you're honest and quiet.</li>
+      <li>How you show up when the pressure is on.</li>
+      <li>How you move through the world on an ordinary day.</li>
+      <li>How the people closest to you would describe you if asked.</li>
+    </ul>
+    <p class="map-close reveal">Each of these is real. Each tells a different part of the story.<br><br>
+      Prism maps one specific lens — how you receive and process the world from the inside. <em>One piece of a larger picture. A place to start.</em>
+    </p>
+    <p class="map-close reveal" style="margin-top: 32px;">Every Prism profile was built from the pattern logic first — then checked against the documented lives of real people before anyone ever saw it. Where the map didn't fit, we changed the map.</p>
+  </section>
+
+  <section class="story">
+    <p class="section-label reveal">Why Prism exists</p>
+    <p class="reveal">Prism was built at a kitchen table, by a family, for the person it started with.</p>
+    <p class="reveal">It started with one map. Then it fit someone else. Then it became clear it could fit anyone — because we all have superpowers and shadow sides. Every single one of us.</p>
+    <p class="pull-small reveal">"Prism doesn't promise easy. It promises that when you understand how you work, you can be present for all of it — the hard and the extraordinary both."</p>
+  </section>
+
+
+  <section class="luck">
+    <p class="section-label reveal">What knowing does</p>
+    <h2 class="luck-headline reveal">Luck is <span>preparation</span> meeting opportunity.</h2>
+    <p class="reveal">Knowing how your brain works — how you process, what costs you, what you're quietly brilliant at — means you show up prepared. Not just for the moments you plan for. For the ones you don't.</p>
+    <p class="reveal">The map doesn't create the opportunity. It makes sure you're ready when it arrives.</p>
+    <p class="reveal">Knowing your wiring prepares you. But it does something else too — it gives you language for who you are. Language you can share. And when two people can both say this is how I work, something real becomes possible. That's where trust starts. And trust is where results come from.</p>
+  </section>
+
+  <section class="not-mbti">
+    <p class="section-label reveal">What Prism is not</p>
+    <p class="reveal">You've probably taken a personality assessment before.</p>
+    <p class="reveal">Tools like Myers-Briggs, DISC, and the Enneagram each map something real — as we understand them: personality preferences, behavioral styles, core motivations. Each is a valuable lens, and each is best described in its own words.</p>
+    <div class="distinction reveal">Prism maps something that sits underneath that — how you receive and process the world from the inside. Your cognitive rhythm. Your sensory patterns. The things that shape every experience before you've decided how to respond to it.</div>
+    <p class="reveal">Prism gives you language — for things you've always sensed about yourself but never had words for. First, a map that helps you understand and trust your own experience. Then, if you choose, one you can share with the people who matter — and say: this is how I work.</p>
+    <div class="tag-row reveal">
+      <span class="tag">Myers-Briggs — personality type</span>
+      <span class="tag">DISC — behavioral style</span>
+      <span class="tag">Enneagram — core motivation</span>
+      <span class="tag active">Prism — how you receive the world</span>
+    </div>
+    <p class="tag-note reveal">Our plain-language shorthand. Each tool speaks for itself best.</p>
+  </section>
+
+  <section>
+    <p class="section-label reveal">What the map makes possible</p>
+    <div class="goals">
+      <div class="goal reveal">
+        <p class="goal-name">Self-understanding</p>
+        <p class="goal-desc">Terrain you've always been walking, finally with a name for it.</p>
+      </div>
+      <div class="goal reveal">
+        <p class="goal-name">Self-advocacy</p>
+        <p class="goal-desc">Something you can bring to the conversations that matter. This is how I work. This is what I've been navigating. This is what I need.</p>
+      </div>
+      <div class="goal reveal">
+        <p class="goal-name">Meaningful connection</p>
+        <p class="goal-desc">A shared language for why you work the way you do together — understanding difference without judgment.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label reveal">Where this is going</p>
+    <p class="reveal" style="font-size: 18px; line-height: 1.9;">Prism starts here — one map, for one stage of life. It's built to grow: maps for children and the parents advocating for them, for teenagers finding their shape, for every age after — in many languages, because understanding should speak every language — and for two people mapping each other, then couples, families, and teams finding a shared language for how they work together.</p>
+  </section>
+
+  <div class="footer-wrap" id="assessment">
+    <canvas id="refraction-canvas"></canvas>
+    <footer>
+      <p class="footer-tagline reveal">
+        Prism — mapping how you experience the world,<br>
+        and what that makes possible —<br>
+        <span class="brand">Fearless &amp; Undefined.</span>
+      </p>
+      <a href="https://tally.so/r/EkXLWL" class="footer-cta reveal" target="_blank" rel="noopener">Let's see my pattern</a>
+      <div class="footer-bottom">
+        <span class="footer-logo">Prism</span>
+        <span class="footer-note">Fearless &amp; Undefined &middot; A self-mapping tool</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    /* SCROLL REVEALS */
+    const reveals = document.querySelectorAll('.reveal');
+    const ro = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => ro.observe(el));
+
+    /* NEBULA HERO */
+    (function() {
+      const c = document.getElementById('nebula');
+      const ctx = c.getContext('2d');
+      let W, H, pts;
+      function resize() { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; init(); }
+      function init() {
+        pts = [];
+        const n = Math.floor(W * H / 5500);
+        for (let i = 0; i < n; i++) {
+          pts.push({ x: Math.random()*W, y: Math.random()*H, r: 80+Math.random()*200,
+            hue: Math.random()<0.55 ? 255 : 172, spd: 0.00012+Math.random()*0.00018,
+            ang: Math.random()*Math.PI*2, drift: (Math.random()-0.5)*0.0007,
+            a: 0.05+Math.random()*0.09 });
+        }
+      }
+      function draw() {
+        ctx.clearRect(0,0,W,H);
+        ctx.fillStyle='#080808'; ctx.fillRect(0,0,W,H);
+        pts.forEach(p => {
+          p.ang += p.drift; p.x += Math.cos(p.ang)*p.spd*W; p.y += Math.sin(p.ang)*p.spd*H;
+          if (p.x < -p.r) p.x=W+p.r; if (p.x > W+p.r) p.x=-p.r;
+          if (p.y < -p.r) p.y=H+p.r; if (p.y > H+p.r) p.y=-p.r;
+          const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+          g.addColorStop(0,`hsla(${p.hue},58%,52%,${p.a})`);
+          g.addColorStop(1,`hsla(${p.hue},50%,28%,0)`);
+          ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+        });
+        const v = ctx.createRadialGradient(W/2,H/2,H*0.15,W/2,H/2,H*0.9);
+        v.addColorStop(0,'rgba(8,8,8,0)'); v.addColorStop(1,'rgba(8,8,8,0.88)');
+        ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
+        requestAnimationFrame(draw);
+      }
+      window.addEventListener('resize', resize); resize(); draw();
+    })();
+
+    
+
+    /* REFRACTION FOOTER */
+    (function() {
+      const c = document.getElementById('refraction-canvas');
+      const ctx = c.getContext('2d');
+      let W, H, beams, t=0;
+      function resize() { W=c.width=c.offsetWidth; H=c.height=c.offsetHeight; init(); }
+      function init() {
+        beams=[];
+        const hues=[258,210,172,140,258,190];
+        for(let i=0;i<6;i++){
+          beams.push({x:W*(0.08+i*0.16), ang:-Math.PI/2+(Math.random()-0.5)*0.5,
+            w:50+Math.random()*90, hue:hues[i], a:0.07+Math.random()*0.07,
+            spd:0.00018+Math.random()*0.00025, phase:(i/6)*Math.PI*2});
+        }
+      }
+      function draw() {
+        t+=0.009; ctx.clearRect(0,0,W,H);
+        beams.forEach(b => {
+          const cx=b.x+Math.sin(t*b.spd*500+b.phase)*W*0.07;
+          const ang=b.ang+Math.sin(t*b.spd*300+b.phase)*0.12;
+          const len=H*1.6;
+          const ex=cx+Math.cos(ang)*len, ey=Math.sin(ang)*len;
+          const px=Math.cos(ang+Math.PI/2)*b.w, py=Math.sin(ang+Math.PI/2)*b.w;
+          const g=ctx.createLinearGradient(cx-px,-py,cx+px,py);
+          g.addColorStop(0,`hsla(${b.hue},72%,62%,0)`);
+          g.addColorStop(0.5,`hsla(${b.hue},72%,62%,${b.a})`);
+          g.addColorStop(1,`hsla(${b.hue},72%,62%,0)`);
+          ctx.beginPath(); ctx.moveTo(cx-px,-py); ctx.lineTo(cx+px,py);
+          ctx.lineTo(ex+px,ey+py); ctx.lineTo(ex-px,ey-py); ctx.closePath();
+          ctx.fillStyle=g; ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      window.addEventListener('resize', resize); resize(); draw();
+    })();
+  </script>
+</body>
+</html>
