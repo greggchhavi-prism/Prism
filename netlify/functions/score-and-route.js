@@ -1,5 +1,8 @@
 // netlify/functions/score-and-route.js
-// Receives Tally webhook, scores by label name, assigns PrismType, sends Brevo email
+// Receives Tally webhook, scores by label name, assigns PrismType,
+// stores result for the profile redirect, sends Brevo email
+
+const { getStore } = require("@netlify/blobs");
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 const SITE_URL = "https://joyful-kangaroo-a13e66.netlify.app";
@@ -88,6 +91,7 @@ exports.handler = async function (event) {
   try {
     const body = JSON.parse(event.body);
     const fields = body.data?.fields || [];
+    const submissionId = body.data?.submissionId || "";
 
     // Extract email
     let email = "";
@@ -106,6 +110,7 @@ exports.handler = async function (event) {
     }
 
     console.log("Scores received:", JSON.stringify(scores));
+    console.log("Submission ID:", submissionId);
 
     // Score each section
     const s1 = getPrimary(scores, ["S1_Initiator","S1_Sustainer","S1_Adapter","S1_Pauser"]);
@@ -120,6 +125,19 @@ exports.handler = async function (event) {
 
     console.log(`S1=${s1} S2=${s2} S3=${s3} S4=${s4} S5=${s5} S6=${s6} S7=${s7}`);
     console.log(`PrismType: ${prismType} | Layer: ${routingLayer} | ShadowLoad: ${shadowLoad}`);
+
+    // Store result so preparing.html can find it via get-result
+    if (submissionId) {
+      const store = getStore({
+        name: "prism-results",
+        siteID: "be64008c-c9b0-4755-81bd-54525292aff0",
+        token: process.env.NETLIFY_TOKEN
+      });
+      await store.set(submissionId, prismType, { ttl: 3600 });
+      console.log("Result stored for submission:", submissionId);
+    } else {
+      console.error("No submissionId in webhook payload — result not stored");
+    }
 
     const profileUrl = `${SITE_URL}/profile.html?type=${encodeURIComponent(prismType)}`;
 
