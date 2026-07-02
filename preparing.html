@@ -57,7 +57,7 @@
           const data = await res.json();
 
           if (data.ready && data.prismType) {
-            window.location.href = `/?type=${encodeURIComponent(data.prismType)}`;
+            window.location.href = `/profile.html?type=${encodeURIComponent(data.prismType)}`;
             return;
           }
         } catch (err) {}
