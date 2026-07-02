@@ -121,7 +121,7 @@ exports.handler = async function (event) {
     console.log(`S1=${s1} S2=${s2} S3=${s3} S4=${s4} S5=${s5} S6=${s6} S7=${s7}`);
     console.log(`PrismType: ${prismType} | Layer: ${routingLayer} | ShadowLoad: ${shadowLoad}`);
 
-    const profileUrl = `${SITE_URL}/?type=${encodeURIComponent(prismType)}`;
+    const profileUrl = `${SITE_URL}/profile.html?type=${encodeURIComponent(prismType)}`;
 
     // Send Brevo email
     if (email && BREVO_API_KEY) {
