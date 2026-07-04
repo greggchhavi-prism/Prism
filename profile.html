@@ -67,6 +67,10 @@
   .gift-icon { font-size: 24px; margin-bottom: 12px; display: block; }
   .gift-label { font-size: 10px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 12px; display: block; }
   .gift-text { font-size: 14px; line-height: 1.75; color: var(--text-muted); font-weight: 300; }
+  .travels-section { max-width: 640px; margin: 72px auto 0; }
+  .travels-text { font-size: 15px; line-height: 1.8; color: var(--text-muted); font-weight: 300; margin-bottom: 20px; }
+  .travels-text:last-of-type { margin-bottom: 28px; }
+  .travels-prompt { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; font-style: italic; line-height: 1.6; color: var(--text); padding-left: 24px; border-left: 1px solid rgba(99,102,241,0.5); }
   .feedback-section { text-align: center; margin-top: 72px; padding-top: 48px; border-top: 1px solid var(--border); }
   .feedback-text { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; font-weight: 300; }
   .action-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
@@ -85,6 +89,8 @@
     .type-name { -webkit-text-fill-color: #4f46e5; background: none; }
     .fearless { -webkit-text-fill-color: #7c3aed; background: none; }
     .gift-card { border: 1px solid #ddd; }
+    .travels-text { color: #444; }
+    .travels-prompt { color: black; border-left: 1px solid #4f46e5; }
     .reveal { opacity: 1; transform: none; }
   }
 </style>
@@ -139,6 +145,13 @@
       <div class="gift-card"><span class="gift-icon">♩</span><span class="gift-label">Music</span><p class="gift-text" id="music"></p></div>
       <div class="gift-card"><span class="gift-icon">◎</span><span class="gift-label">Movement</span><p class="gift-text" id="movement"></p></div>
     </div>
+  </div>
+
+  <div class="travels-section reveal">
+    <div class="section-divider">Your pattern travels</div>
+    <p class="travels-text">The careers above are places your pattern already fits — and a pattern rarely fits just one thing. Whether you're looking for work, or want to explore new things alongside it — a career doesn't have to be one thing. Your profile can help you search differently.</p>
+    <p class="travels-text">Download your profile. Give it to any AI tool you use, along with your work history — and, if it helps, the parts of any job that you genuinely enjoyed. Then ask:</p>
+    <p class="travels-prompt">"Based on how I work, what I've done, and what I've enjoyed — what fields or roles would align with all of this?"</p>
   </div>
 
   <div class="feedback-section reveal">
