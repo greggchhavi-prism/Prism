@@ -72,6 +72,7 @@
   .travels-text:last-of-type { margin-bottom: 28px; }
   .travels-prompt { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; font-style: italic; line-height: 1.6; color: var(--text); padding-left: 24px; border-left: 1px solid rgba(99,102,241,0.5); }
   .feedback-section { text-align: center; margin-top: 72px; padding-top: 48px; border-top: 1px solid var(--border); }
+  .optin-text { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 300; font-style: italic; line-height: 1.7; color: var(--text); max-width: 560px; margin: 0 auto 28px; }
   .feedback-text { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; font-weight: 300; }
   .action-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
   .feedback-btn { display: inline-block; padding: 12px 28px; border: 1px solid rgba(99,102,241,0.4); border-radius: 100px; color: rgba(99,102,241,0.8); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; letter-spacing: 0.05em; text-decoration: none; transition: all 0.3s ease; }
@@ -150,22 +151,28 @@
 
   <div class="travels-section reveal">
     <div class="section-divider">Your pattern travels</div>
-    <p class="travels-text">The careers above are places your pattern already fits — and a pattern rarely fits just one thing. Whether you're looking for work, or want to explore new things alongside it — a career doesn't have to be one thing. Your profile can help you search differently.</p>
-    <p class="travels-text">Download your profile. Give it to any AI tool you use, along with your work history — and, if it helps, the parts of any job that you genuinely enjoyed. Then ask:</p>
+    <p class="travels-text">The careers, creative practices, music, and movement above are all places your pattern already fits — and a pattern rarely fits just one thing. Your profile can help you look differently.</p>
+    <p class="travels-text">If you ever feel like exploring, your profile can come with you. For example, share it with any AI tool you use, along with your work history and the parts of any job you genuinely enjoyed — then ask:</p>
     <p class="travels-prompt">"Based on how I work, what I've done, and what I've enjoyed — what fields or roles would align with all of this?"</p>
   </div>
 
   <div class="feedback-section reveal">
+    <p class="optin-text">Thank you for being here. Prism is a work in progress — and so is every map. If something resonated, or something felt off, we'd love to hear it. Sharing your anonymized results alongside your feedback helps us connect the dots and make Prism better for everyone who comes after you.</p>
     <div class="action-buttons">
+      <a class="feedback-btn" id="feedbackBtn" href="#" target="_blank" rel="noopener">Yes, share my results and feedback →</a>
       <button class="download-btn" onclick="window.print()">Save your profile ↓</button>
     </div>
   </div>
 </div>
 
 <script>
+  const FEEDBACK_FORM_URL = 'https://tally.so/r/REPLACE_ME'; // ← swap in the Prism Feedback form URL
+
   async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
     const prismType = params.get('type');
+    const sid = params.get('sid') || '';
+    document.getElementById('feedbackBtn').href = `${FEEDBACK_FORM_URL}?sid=${encodeURIComponent(sid)}`;
     if (!prismType) { showError(); return; }
     try {
       const res = await fetch(`/.netlify/functions/get-profile?type=${encodeURIComponent(prismType)}`);
