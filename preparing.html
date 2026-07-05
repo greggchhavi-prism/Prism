@@ -57,7 +57,7 @@
           const data = await res.json();
 
           if (data.ready && data.prismType) {
-            window.location.href = `/profile.html?type=${encodeURIComponent(data.prismType)}`;
+            window.location.href = `/profile.html?type=${encodeURIComponent(data.prismType)}&sid=${encodeURIComponent(submissionId)}`;
             return;
           }
         } catch (err) {}
@@ -67,7 +67,7 @@
           setTimeout(poll, 2000);
         } else {
           document.querySelector('.heading').textContent = 'Taking longer than expected.';
-          document.querySelector('.subtext').textContent = 'Check your email — your profile link will be waiting there.';
+          document.querySelector('.subtext').textContent = 'Your profile is still being prepared. Give it a moment, then refresh this page.';
           document.querySelector('.dots').style.display = 'none';
         }
       };
