@@ -171,7 +171,11 @@
   async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
     const prismType = params.get('type');
-    const sid = params.get('sid') || '';
+    let sid = params.get('sid') || '';
+    try {
+      if (sid) { localStorage.setItem('prismSubmissionId', sid); }
+      else { sid = localStorage.getItem('prismSubmissionId') || ''; }
+    } catch (e) {}
     document.getElementById('feedbackBtn').href = `${FEEDBACK_FORM_URL}?sid=${encodeURIComponent(sid)}`;
     if (!prismType) { showError(); return; }
     try {
