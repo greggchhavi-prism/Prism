@@ -43,21 +43,26 @@
     const params = new URLSearchParams(window.location.search);
     const submissionId = params.get('submissionId');
 
-    if (!submissionId) {
-      document.querySelector('.heading').textContent = 'Something went wrong.';
-      document.querySelector('.subtext').textContent = 'Please retake the assessment.';
+    let storedId = null;
+    try { storedId = localStorage.getItem('prismSubmissionId'); } catch (e) {}
+    const activeId = submissionId || storedId;
+
+    if (!activeId) {
+      document.querySelector('.heading').textContent = 'This link looks incomplete.';
+      document.querySelector('.subtext').textContent = "Your profile is safe. Try opening your original link again — and if that doesn't work, reach out to whoever shared Prism with you.";
       document.querySelector('.dots').style.display = 'none';
     } else {
+      try { localStorage.setItem('prismSubmissionId', activeId); } catch (e) {}
       let attempts = 0;
       const maxAttempts = 30;
 
       const poll = async () => {
         try {
-          const res = await fetch(`/.netlify/functions/get-result?submissionId=${encodeURIComponent(submissionId)}`);
+          const res = await fetch(`/.netlify/functions/get-result?submissionId=${encodeURIComponent(activeId)}`);
           const data = await res.json();
 
           if (data.ready && data.prismType) {
-            window.location.href = `/profile.html?type=${encodeURIComponent(data.prismType)}&sid=${encodeURIComponent(submissionId)}`;
+            window.location.href = `/profile.html?type=${encodeURIComponent(data.prismType)}&sid=${encodeURIComponent(activeId)}`;
             return;
           }
         } catch (err) {}
