@@ -143,7 +143,7 @@
       <line x1="32" y1="30" x2="60" y2="56" stroke="#4CAF6E" stroke-width="0.5" opacity="0.3"/>
       <circle cx="32" cy="4" r="2" fill="white" opacity="0.6"/>
     </svg>
-    <p class="prism-sublabel">Prism — mapping how you experience the world and the potential that unlocks — <span class="fearless">Fearless & Undefined</span></p>
+    <p class="prism-sublabel">Prism — mapping how you experience the world, and what that makes possible — <span class="fearless">Fearless & Undefined</span></p>
     <h1 class="type-name" id="typeName"></h1>
     <p class="mirror" id="mirror"></p>
     <div class="listen-bar" id="listenBar" hidden>
@@ -188,9 +188,9 @@
   </div>
 
   <div class="archetypes-section reveal" id="archetypesSection">
-    <div class="section-divider">Your pattern in other lives</div>
-    <p class="archetypes-intro">Every Prism profile was checked against the documented lives of real people before anyone saw it. Two of those lives match your pattern. They're hidden until you choose — names carry weight, and your map should be yours before it's anyone else's.</p>
-    <button class="archetype-btn" id="archetypeBtn">Show me the two lives →</button>
+    <div class="section-divider">Your archetypes</div>
+    <p class="archetypes-intro">Every Prism profile was checked against the documented lives of real people before anyone saw it — two per pattern. We call them archetypes: not who you are, but proof your pattern has walked in the world before. They're hidden until you choose — names carry weight, and your map should be yours before it's anyone else's.</p>
+    <button class="archetype-btn" id="archetypeBtn">Reveal my archetypes →</button>
     <div class="archetype-cards" id="archetypeCards"></div>
   </div>
 
@@ -311,7 +311,7 @@
           const cards = document.getElementById('archetypeCards');
           cards.innerHTML = archetypes.map(a =>
             `<div class="archetype-card"><p class="archetype-name">${a.name}</p><p class="archetype-bio">${a.bio}</p></div>`
-          ).join('') + `<p class="archetype-footnote">Their lives helped confirm the map — the pattern is yours in your own way.</p>`;
+          ).join('') + `<p class="archetype-footnote">They helped confirm the map — the pattern is yours in your own way.</p>`;
           document.getElementById('archetypesSection').classList.add('revealed');
         });
       } else {
@@ -388,7 +388,7 @@
     push(document.querySelector('.travels-prompt').textContent);
     // Archetypes: spoken only if the person chose to reveal them
     if (document.getElementById('archetypesSection').classList.contains('revealed')) {
-      push('Your pattern in other lives.');
+      push('Your archetypes.');
       document.querySelectorAll('.archetype-card').forEach(c => {
         push(c.querySelector('.archetype-name').textContent + '.');
         push(c.querySelector('.archetype-bio').textContent);
