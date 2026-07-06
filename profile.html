@@ -71,6 +71,17 @@
   .travels-text { font-size: 15px; line-height: 1.8; color: var(--text-muted); font-weight: 300; margin-bottom: 20px; }
   .travels-text:last-of-type { margin-bottom: 28px; }
   .travels-prompt { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; font-style: italic; line-height: 1.6; color: var(--text); padding-left: 24px; border-left: 1px solid rgba(99,102,241,0.5); }
+  .archetypes-section { max-width: 640px; margin: 72px auto 0; text-align: center; }
+  .archetypes-intro { font-size: 15px; line-height: 1.8; color: var(--text-muted); font-weight: 300; margin-bottom: 28px; text-align: left; }
+  .archetype-btn { display: inline-block; padding: 12px 28px; border: 1px solid rgba(99,102,241,0.4); border-radius: 100px; color: rgba(99,102,241,0.8); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; letter-spacing: 0.05em; background: transparent; cursor: pointer; transition: all 0.3s ease; }
+  .archetype-btn:hover { border-color: rgba(99,102,241,0.8); color: rgba(99,102,241,1); background: rgba(99,102,241,0.05); }
+  .archetype-cards { display: none; flex-direction: column; gap: 12px; text-align: left; }
+  .archetypes-section.revealed .archetype-cards { display: flex; }
+  .archetypes-section.revealed .archetype-btn { display: none; }
+  .archetype-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 32px; }
+  .archetype-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text); margin-bottom: 8px; }
+  .archetype-bio { font-size: 14px; line-height: 1.75; color: var(--text-muted); font-weight: 300; }
+  .archetype-footnote { font-size: 12px; line-height: 1.7; color: var(--text-dim); font-style: italic; margin-top: 20px; text-align: center; }
   .feedback-section { text-align: center; margin-top: 72px; padding-top: 48px; border-top: 1px solid var(--border); }
   .optin-text { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 300; font-style: italic; line-height: 1.7; color: var(--text); max-width: 560px; margin: 0 auto 28px; }
   .feedback-text { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; font-weight: 300; }
@@ -86,6 +97,9 @@
     :root { --text: #000000; --text-muted: #333333; --text-dim: #555555; }
     body { background: white; color: black; }
     .scroll-hint, .action-buttons, .feedback-section { display: none; }
+    .archetypes-section:not(.revealed) { display: none; }
+    .archetype-btn { display: none; }
+    .archetype-card { border: 1px solid #ddd; }
     .facet-card.superpower { background: #f5f5ff; border-left: 3px solid #4f46e5; }
     .facet-card.shadow { background: #f9f5ff; border-left: 3px solid #7c3aed; }
     .type-name { -webkit-text-fill-color: #4f46e5; background: none; }
@@ -156,6 +170,13 @@
     <p class="travels-prompt">"Based on how I work, what I've done, and what I've enjoyed — what fields or roles would align with all of this?"</p>
   </div>
 
+  <div class="archetypes-section reveal" id="archetypesSection">
+    <div class="section-divider">Your pattern in other lives</div>
+    <p class="archetypes-intro">Every Prism profile was checked against the documented lives of real people before anyone saw it. Two of those lives match your pattern. They're hidden until you choose — names carry weight, and your map should be yours before it's anyone else's.</p>
+    <button class="archetype-btn" id="archetypeBtn">Show me the two lives →</button>
+    <div class="archetype-cards" id="archetypeCards"></div>
+  </div>
+
   <div class="feedback-section reveal">
     <p class="optin-text">Prism is a work in progress — and so is every map. If something resonated, or something felt off, we'd love to hear it. Your feedback comes with your anonymized results, so we can connect the dots.</p>
     <div class="action-buttons">
@@ -167,6 +188,49 @@
 
 <script>
   const FEEDBACK_FORM_URL = 'https://tally.so/r/Xx9jXP';
+
+  const ARCHETYPES = {
+    'The Navigator': [
+      { name: 'Nelson Mandela', bio: 'South African leader who spent 27 years in prison and emerged to guide his country out of apartheid — reading people across deep divides and moving between worlds that seemed impossible to bridge.' },
+      { name: 'Maya Angelou', bio: 'American writer and poet whose work moved between memoir, poetry, and performance — giving language to experiences many people had carried in silence.' }
+    ],
+    'The Anchor': [
+      { name: 'Fred Rogers', bio: 'American television host who spent more than 30 years speaking calmly and honestly to children — a steady, unchanging presence for generations who needed one.' },
+      { name: 'Ruth Bader Ginsburg', bio: 'American judge who built lasting change case by case, over decades — patient, careful work that held up long after faster approaches faded.' }
+    ],
+    'The Maker': [
+      { name: 'Steve Jobs', bio: 'Co-founder of Apple who moved ideas into products people could hold — insisting the real thing mattered more than the theory of it.' },
+      { name: 'Nikola Tesla', bio: 'Inventor whose hands-on experiments with electricity produced technologies the world still runs on — often built and tested before anyone else believed they could work.' }
+    ],
+    'The Visionary': [
+      { name: 'Elon Musk', bio: 'Entrepreneur who builds toward futures that don\'t exist yet — electric cars, reusable rockets — often years before the world is ready to receive them.' },
+      { name: 'Buckminster Fuller', bio: 'American architect and inventor who spent his life designing for a future he could already see clearly — and inviting the world to catch up.' }
+    ],
+    'The Weaver': [
+      { name: 'The Dalai Lama', bio: 'Tibetan spiritual leader who has spent decades holding a displaced community together — while building bridges across faiths, cultures, and sciences.' },
+      { name: 'Desmond Tutu', bio: 'South African archbishop who helped his country face its past without breaking apart — holding truth and reconciliation in the same hands.' }
+    ],
+    'The Spark': [
+      { name: 'Robin Williams', bio: 'American comedian and actor whose improvisational energy could fill any room — moving between laughter and depth in a single breath.' },
+      { name: 'Frida Kahlo', bio: 'Mexican painter whose vivid, unmistakable work turned her own life into imagery that still speaks to people around the world.' }
+    ],
+    'The Architect': [
+      { name: 'Charles Darwin', bio: 'English naturalist who spent more than 20 years quietly building the theory of evolution — refusing to share it before the structure could hold.' },
+      { name: 'Ada Lovelace', bio: 'English mathematician who saw, a century early, that computing machines could go far beyond numbers — and wrote what is considered the first algorithm.' }
+    ],
+    'The Explorer': [
+      { name: 'David Bowie', bio: 'English musician who kept reinventing himself — moving across genres, identities, and art forms, and turning each crossing into something new.' },
+      { name: 'Richard Feynman', bio: 'American physicist who won the Nobel Prize — and also picked locks, played drums, and painted, following curiosity wherever it led.' }
+    ],
+    'The Distiller': [
+      { name: 'Toni Morrison', bio: 'American novelist and Nobel laureate whose carefully weighted words gave voice to lives literature had overlooked — work that took the time it needed.' },
+      { name: 'Carl Jung', bio: 'Swiss psychiatrist who spent decades sitting with the depths of the human mind — and returned with ideas, like the inner shadow, still in use today.' }
+    ],
+    'The Catalyst': [
+      { name: 'Martin Luther King Jr.', bio: 'American minister who led a movement for civil rights — meeting urgency with moral clarity, and words that still move people to act.' },
+      { name: 'Frederick Douglass', bio: 'American writer and speaker, born into slavery, whose voice became one of the most powerful forces for its abolition.' }
+    ]
+  };
 
   async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
@@ -222,6 +286,20 @@
       document.getElementById('creative').textContent = f.Creative || '';
       document.getElementById('music').textContent = f.Music || '';
       document.getElementById('movement').textContent = f.Movement || '';
+
+      // Archetypes — hidden until the person chooses
+      const archetypes = ARCHETYPES[f.PrismType];
+      if (archetypes) {
+        document.getElementById('archetypeBtn').addEventListener('click', () => {
+          const cards = document.getElementById('archetypeCards');
+          cards.innerHTML = archetypes.map(a =>
+            `<div class="archetype-card"><p class="archetype-name">${a.name}</p><p class="archetype-bio">${a.bio}</p></div>`
+          ).join('') + `<p class="archetype-footnote">Their lives helped confirm the map — the pattern is yours in your own way.</p>`;
+          document.getElementById('archetypesSection').classList.add('revealed');
+        });
+      } else {
+        document.getElementById('archetypesSection').style.display = 'none';
+      }
 
       // Show profile
       document.getElementById('loadingScreen').classList.add('hidden');
