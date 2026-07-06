@@ -9,16 +9,15 @@
 <style>
   :root {
     --bg: #0f0e1a; --bg-card: #1a1830; --bg-card-light: #211f3a;
-    --indigo: #4f46e5; --indigo-soft: #6366f1; --violet: #7c3aed;
-    --rose: #e11d48; --amber: #f59e0b; --teal: #0d9488;
+    --p-purple: #7C6FE0; --p-blue: #5B8BD4; --p-teal: #3FA8A0; --p-green: #4CAF6E;
     --text: #ffffff; --text-muted: #ffffff; --text-dim: #ffffff;
     --border: rgba(255,255,255,0.07);
-    --prism-gradient: linear-gradient(135deg, #4f46e5, #7c3aed, #ec4899, #f59e0b);
+    --prism-gradient: linear-gradient(135deg, #7C6FE0, #3FA8A0, #4CAF6E);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; overflow-x: hidden; }
-  body::before { content: ''; position: fixed; top: -30%; left: -20%; width: 70%; height: 70%; background: radial-gradient(ellipse, rgba(79,70,229,0.12) 0%, transparent 70%); pointer-events: none; z-index: 0; }
-  body::after { content: ''; position: fixed; bottom: -20%; right: -10%; width: 50%; height: 60%; background: radial-gradient(ellipse, rgba(124,58,237,0.08) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+  body::before { content: ''; position: fixed; top: -30%; left: -20%; width: 70%; height: 70%; background: radial-gradient(ellipse, rgba(124,111,224,0.12) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+  body::after { content: ''; position: fixed; bottom: -20%; right: -10%; width: 50%; height: 60%; background: radial-gradient(ellipse, rgba(63,168,160,0.08) 0%, transparent 70%); pointer-events: none; z-index: 0; }
   .loading-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; transition: opacity 0.6s ease; }
   .loading-screen.hidden { opacity: 0; pointer-events: none; }
   .loading-prism { width: 48px; height: 48px; margin-bottom: 24px; animation: float 2s ease-in-out infinite; }
@@ -46,11 +45,11 @@
   .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
   .facets { display: flex; flex-direction: column; gap: 12px; margin-bottom: 48px; }
   .facet-card { padding: 32px 36px; border-radius: 14px; }
-  .facet-card.superpower { background: linear-gradient(145deg, #1e1c35, #252240); border-left: 3px solid var(--indigo-soft); }
-  .facet-card.shadow { background: linear-gradient(145deg, #1e1c2e, #1a1828); border-left: 3px solid rgba(124,58,237,0.5); }
+  .facet-card.superpower { background: linear-gradient(145deg, #1e1c35, #252240); border-left: 3px solid var(--p-purple); }
+  .facet-card.shadow { background: linear-gradient(145deg, #1e1c2e, #1a1828); border-left: 3px solid rgba(63,168,160,0.55); }
   .facet-name { font-size: 10px; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 10px; display: block; }
-  .facet-card.superpower .facet-name { color: rgba(99,102,241,0.9); }
-  .facet-card.shadow .facet-name { color: rgba(124,58,237,0.7); }
+  .facet-card.superpower .facet-name { color: rgba(124,111,224,0.95); }
+  .facet-card.shadow .facet-name { color: rgba(63,168,160,0.8); }
   .facet-text { font-size: 15px; line-height: 1.75; color: var(--text); font-weight: 300; }
   .gifts-header { text-align: center; margin-bottom: 40px; }
   .gifts-title { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; font-style: italic; color: var(--text); margin-bottom: 8px; }
@@ -58,23 +57,23 @@
   .gifts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .gift-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; transition: border-color 0.3s ease, transform 0.3s ease; position: relative; overflow: hidden; }
   .gift-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; opacity: 0; transition: opacity 0.3s ease; }
-  .gift-card:hover { border-color: rgba(99,102,241,0.3); transform: translateY(-2px); }
+  .gift-card:hover { border-color: rgba(124,111,224,0.3); transform: translateY(-2px); }
   .gift-card:hover::before { opacity: 1; }
-  .gift-card:nth-child(1)::before { background: linear-gradient(90deg, var(--indigo), var(--violet)); }
-  .gift-card:nth-child(2)::before { background: linear-gradient(90deg, var(--violet), var(--rose)); }
-  .gift-card:nth-child(3)::before { background: linear-gradient(90deg, var(--teal), var(--indigo)); }
-  .gift-card:nth-child(4)::before { background: linear-gradient(90deg, var(--amber), var(--rose)); }
+  .gift-card:nth-child(1)::before { background: linear-gradient(90deg, var(--p-purple), var(--p-blue)); }
+  .gift-card:nth-child(2)::before { background: linear-gradient(90deg, var(--p-blue), var(--p-teal)); }
+  .gift-card:nth-child(3)::before { background: linear-gradient(90deg, var(--p-teal), var(--p-green)); }
+  .gift-card:nth-child(4)::before { background: linear-gradient(90deg, var(--p-purple), var(--p-green)); }
   .gift-icon { font-size: 24px; margin-bottom: 12px; display: block; }
   .gift-label { font-size: 10px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 12px; display: block; }
   .gift-text { font-size: 14px; line-height: 1.75; color: var(--text-muted); font-weight: 300; }
   .travels-section { max-width: 640px; margin: 72px auto 0; }
   .travels-text { font-size: 15px; line-height: 1.8; color: var(--text-muted); font-weight: 300; margin-bottom: 20px; }
   .travels-text:last-of-type { margin-bottom: 28px; }
-  .travels-prompt { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; font-style: italic; line-height: 1.6; color: var(--text); padding-left: 24px; border-left: 1px solid rgba(99,102,241,0.5); }
+  .travels-prompt { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; font-style: italic; line-height: 1.6; color: var(--text); padding-left: 24px; border-left: 1px solid rgba(124,111,224,0.5); }
   .archetypes-section { max-width: 640px; margin: 72px auto 0; text-align: center; }
   .archetypes-intro { font-size: 15px; line-height: 1.8; color: var(--text-muted); font-weight: 300; margin-bottom: 28px; text-align: left; }
-  .archetype-btn { display: inline-block; padding: 12px 28px; border: 1px solid rgba(99,102,241,0.4); border-radius: 100px; color: rgba(99,102,241,0.8); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; letter-spacing: 0.05em; background: transparent; cursor: pointer; transition: all 0.3s ease; }
-  .archetype-btn:hover { border-color: rgba(99,102,241,0.8); color: rgba(99,102,241,1); background: rgba(99,102,241,0.05); }
+  .archetype-btn { display: inline-block; padding: 12px 28px; border: 1px solid rgba(124,111,224,0.4); border-radius: 100px; color: rgba(124,111,224,0.85); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; letter-spacing: 0.05em; background: transparent; cursor: pointer; transition: all 0.3s ease; }
+  .archetype-btn:hover { border-color: rgba(124,111,224,0.85); color: rgba(124,111,224,1); background: rgba(124,111,224,0.06); }
   .archetype-cards { display: none; flex-direction: column; gap: 12px; text-align: left; }
   .archetypes-section.revealed .archetype-cards { display: flex; }
   .archetypes-section.revealed .archetype-btn { display: none; }
@@ -86,8 +85,8 @@
   .optin-text { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 300; font-style: italic; line-height: 1.7; color: var(--text); max-width: 560px; margin: 0 auto 28px; }
   .feedback-text { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; font-weight: 300; }
   .action-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
-  .feedback-btn { display: inline-block; padding: 12px 28px; border: 1px solid rgba(99,102,241,0.4); border-radius: 100px; color: rgba(99,102,241,0.8); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; letter-spacing: 0.05em; text-decoration: none; transition: all 0.3s ease; }
-  .feedback-btn:hover { border-color: rgba(99,102,241,0.8); color: rgba(99,102,241,1); background: rgba(99,102,241,0.05); }
+  .feedback-btn { display: inline-block; padding: 12px 28px; border: 1px solid rgba(124,111,224,0.4); border-radius: 100px; color: rgba(124,111,224,0.85); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; letter-spacing: 0.05em; text-decoration: none; transition: all 0.3s ease; }
+  .feedback-btn:hover { border-color: rgba(124,111,224,0.85); color: rgba(124,111,224,1); background: rgba(124,111,224,0.06); }
   .download-btn { display: inline-block; padding: 12px 28px; border: 1px solid rgba(255,255,255,0.15); border-radius: 100px; color: var(--text-muted); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; letter-spacing: 0.05em; text-decoration: none; transition: all 0.3s ease; cursor: pointer; background: transparent; }
   .download-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
   .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s ease; }
@@ -100,13 +99,13 @@
     .archetypes-section:not(.revealed) { display: none; }
     .archetype-btn { display: none; }
     .archetype-card { border: 1px solid #ddd; }
-    .facet-card.superpower { background: #f5f5ff; border-left: 3px solid #4f46e5; }
-    .facet-card.shadow { background: #f9f5ff; border-left: 3px solid #7c3aed; }
-    .type-name { -webkit-text-fill-color: #4f46e5; background: none; }
-    .fearless { -webkit-text-fill-color: #7c3aed; background: none; }
+    .facet-card.superpower { background: #f4f3fc; border-left: 3px solid #7C6FE0; }
+    .facet-card.shadow { background: #f0f8f7; border-left: 3px solid #3FA8A0; }
+    .type-name { -webkit-text-fill-color: #7C6FE0; background: none; }
+    .fearless { -webkit-text-fill-color: #3FA8A0; background: none; }
     .gift-card { border: 1px solid #ddd; }
     .travels-text { color: #444; }
-    .travels-prompt { color: black; border-left: 1px solid #4f46e5; }
+    .travels-prompt { color: black; border-left: 1px solid #7C6FE0; }
     .reveal { opacity: 1; transform: none; }
   }
 </style>
@@ -114,7 +113,7 @@
 <body>
 <div class="loading-screen" id="loadingScreen">
   <svg class="loading-prism" viewBox="0 0 64 64" fill="none">
-    <defs><linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4f46e5"/><stop offset="50%" stop-color="#ec4899"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
+    <defs><linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7C6FE0"/><stop offset="50%" stop-color="#3FA8A0"/><stop offset="100%" stop-color="#4CAF6E"/></linearGradient></defs>
     <polygon points="32,4 60,56 4,56" fill="none" stroke="url(#lg1)" stroke-width="1.5"/>
     <circle cx="32" cy="4" r="2" fill="white" opacity="0.6"/>
   </svg>
@@ -129,11 +128,11 @@
   <div class="zone-hit">
     <p class="prism-label">Your Prism Profile</p>
     <svg class="prism-mark" viewBox="0 0 64 64" fill="none">
-      <defs><linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4f46e5"/><stop offset="40%" stop-color="#7c3aed"/><stop offset="75%" stop-color="#ec4899"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
+      <defs><linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7C6FE0"/><stop offset="50%" stop-color="#3FA8A0"/><stop offset="100%" stop-color="#4CAF6E"/></linearGradient></defs>
       <polygon points="32,4 60,56 4,56" fill="none" stroke="url(#lg2)" stroke-width="1.5"/>
       <line x1="32" y1="4" x2="32" y2="56" stroke="url(#lg2)" stroke-width="0.8" stroke-dasharray="2,3" opacity="0.5"/>
-      <line x1="32" y1="4" x2="4" y2="56" stroke="#4f46e5" stroke-width="0.5" opacity="0.3"/>
-      <line x1="32" y1="30" x2="60" y2="56" stroke="#ec4899" stroke-width="0.5" opacity="0.3"/>
+      <line x1="32" y1="4" x2="4" y2="56" stroke="#7C6FE0" stroke-width="0.5" opacity="0.3"/>
+      <line x1="32" y1="30" x2="60" y2="56" stroke="#4CAF6E" stroke-width="0.5" opacity="0.3"/>
       <circle cx="32" cy="4" r="2" fill="white" opacity="0.6"/>
     </svg>
     <p class="prism-sublabel">Prism — mapping how you experience the world and the potential that unlocks — <span class="fearless">Fearless & Undefined</span></p>
