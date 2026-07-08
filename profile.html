@@ -93,20 +93,39 @@
   .reveal.visible { opacity: 1; transform: translateY(0); }
   @media (max-width: 640px) { .gifts-grid { grid-template-columns: 1fr; } }
   @media print {
+    @page { margin: 16mm; }
     :root { --text: #000000; --text-muted: #333333; --text-dim: #555555; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     body { background: white; color: black; }
+    body::before, body::after { display: none; }
+    .loading-screen, .error-screen { display: none !important; }
     .scroll-hint, .action-buttons, .feedback-section { display: none; }
+    .container { max-width: 100%; padding: 0; opacity: 1; }
+    /* Hero: compact for the page, no forced full-height */
+    .zone-hit { min-height: auto; padding: 24px 0 40px; }
+    .prism-mark { animation: none; width: 52px; height: 52px; margin-bottom: 20px; }
+    .type-name { -webkit-text-fill-color: #7C6FE0; background: none; margin-bottom: 20px; }
+    .fearless { -webkit-text-fill-color: #3FA8A0; background: none; }
+    /* Keep every card whole — never split across pages */
+    .facet-card, .gift-card, .archetype-card, .travels-prompt { break-inside: avoid; page-break-inside: avoid; }
+    /* Section headers stay with what follows */
+    .section-divider, .gifts-header { break-after: avoid; page-break-after: avoid; break-inside: avoid; }
+    .facet-name, .gift-label, .archetype-name { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .section-gap { margin-bottom: 40px; }
+    .travels-section, .archetypes-section { margin-top: 40px; }
+    .facet-card { padding: 20px 24px; }
+    .facet-card.superpower { background: #f4f3fc; border-left: 3px solid #7C6FE0; }
+    .facet-card.shadow { background: #f0f8f7; border-left: 3px solid #3FA8A0; }
     .archetypes-section:not(.revealed) { display: none; }
     .archetype-btn { display: none; }
     .archetype-card { border: 1px solid #ddd; }
-    .facet-card.superpower { background: #f4f3fc; border-left: 3px solid #7C6FE0; }
-    .facet-card.shadow { background: #f0f8f7; border-left: 3px solid #3FA8A0; }
-    .type-name { -webkit-text-fill-color: #7C6FE0; background: none; }
-    .fearless { -webkit-text-fill-color: #3FA8A0; background: none; }
-    .gift-card { border: 1px solid #ddd; }
+    .gift-card { border: 1px solid #ddd; padding: 20px 22px; }
+    .gift-card::before { display: none; }
+    .gifts-grid { gap: 12px; }
     .travels-text { color: #444; }
     .travels-prompt { color: black; border-left: 1px solid #7C6FE0; }
-    .reveal { opacity: 1; transform: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
   }
 </style>
 </head>
@@ -312,7 +331,6 @@
       }, 300);
     } catch(err) { showError(); }
   }
-
   function showError() {
     document.getElementById('loadingScreen').classList.add('hidden');
     document.getElementById('errorScreen').classList.add('visible');
