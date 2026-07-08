@@ -1,25 +1,30 @@
 // netlify/functions/score-and-route.js
 // Receives Tally webhook, scores by label name, assigns PrismType,
-// stores result for the profile redirect, sends Brevo email
+// stores result for the profile redirect.
+//
+// Routing engine v2 (July 2026) — proportional scoring.
+// Why: v1 collapsed each section to a single winning subtype before routing.
+// Ties broke silently by list order, and nearest-neighbour ties broke by
+// type-definition order — funnelling flat or mixed profiles into The Maker.
+// Multi-select answers make mixed sections common, so the collapse is gone:
+// every type is scored against the person's full score pattern.
+//
+// How it works:
+//   For each type, each section contributes
+//       weight × (points on the subtype this type expects ÷ total points in the section)
+//   Sections with zero points contribute nothing (no false defaults).
+//   S1/S3/S7 weight 2, S2/S4/S5/S6 weight 1. Highest total wins.
+//   Exact ties (rare) break by primary-section (S1/S3/S7) score alone.
+//
+// Layer 1 (exact match) is kept on top: if S1, S3 and S7 each have a single
+// undisputed winner and that trio matches a type exactly, route there directly.
+// Layer 1 never fires on a tied section — ties always fall to proportional.
 
 const { getStore } = require("@netlify/blobs");
 
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
 const SITE_URL = "https://joyful-kangaroo-a13e66.netlify.app";
 
-function getPrimary(scores, subtypes) {
-  let max = -1;
-  let winner = subtypes[0];
-  for (const s of subtypes) {
-    const val = scores[s] || 0;
-    if (val > max) { max = val; winner = s; }
-  }
-  return winner.split("_")[1];
-}
-
 // All 10 PrismTypes defined by their full 7-section subtype profile
-// S1, S3, S7 are primary dimensions (weight 2)
-// S2, S4, S5, S6 are supporting dimensions (weight 1)
 const PRISM_TYPES = {
   "The Maker":     { S1:"Initiator",   S2:"Linear",          S3:"Concrete",         S4:"Seeker",    S5:"Steady",       S6:"Boundaried", S7:"Builder"    },
   "The Visionary": { S1:"Initiator",   S2:"Associative",     S3:"Abstract",         S4:"Seeker",    S5:"Steady",       S6:"Interpreter",S7:"Experimenter"},
@@ -33,39 +38,71 @@ const PRISM_TYPES = {
   "The Distiller": { S1:"Pauser",      S2:"Layered",         S3:"Multidimensional", S4:"Sensitive", S5:"Reactive",     S6:"Absorber",   S7:"Integrator" },
 };
 
-// Primary dimensions carry double weight in routing
+// Subtype fields per section, and section weights
+const SECTIONS = {
+  S1: { weight: 2, subtypes: ["S1_Initiator","S1_Sustainer","S1_Adapter","S1_Pauser"] },
+  S2: { weight: 1, subtypes: ["S2_Linear","S2_Associative","S2_Layered","S2_Symbolic"] },
+  S3: { weight: 2, subtypes: ["S3_Concrete","S3_Abstract","S3_Metaphorical","S3_Multidimensional"] },
+  S4: { weight: 1, subtypes: ["S4_Seeker","S4_Filtered","S4_Sensitive","S4_Overwhelmed"] },
+  S5: { weight: 1, subtypes: ["S5_Steady","S5_Reactive","S5_Hyperreactive","S5_Fluctuating"] },
+  S6: { weight: 1, subtypes: ["S6_Absorber","S6_DeepFeeler","S6_Boundaried","S6_Interpreter"] },
+  S7: { weight: 2, subtypes: ["S7_Integrator","S7_Improviser","S7_Experimenter","S7_Builder"] },
+};
+
 const PRIMARY_SECTIONS = ["S1", "S3", "S7"];
-const SUPPORTING_SECTIONS = ["S2", "S4", "S5", "S6"];
 
-function assignPrismType(s1, s2, s3, s4, s5, s6, s7) {
-  const actual = { S1:s1, S2:s2, S3:s3, S4:s4, S5:s5, S6:s6, S7:s7 };
+// Returns the section's single undisputed winner (subtype short name),
+// or null if the section is tied or empty. Used only for Layer 1 and logging.
+function strictWinner(scores, section) {
+  const { subtypes } = SECTIONS[section];
+  let max = 0, winner = null, tied = false;
+  for (const s of subtypes) {
+    const val = scores[s] || 0;
+    if (val > max) { max = val; winner = s; tied = false; }
+    else if (val === max && val > 0) { tied = true; }
+  }
+  if (max === 0 || tied) return null;
+  return winner.split("_")[1];
+}
 
-  // Layer 1 — exact match on primary dimensions S1, S3, S7
-  for (const [type, profile] of Object.entries(PRISM_TYPES)) {
-    if (profile.S1 === s1 && profile.S3 === s3 && profile.S7 === s7) {
-      return { type, layer: 1 };
+// Share of a section's points that sit on one subtype (0..1). Empty section → 0.
+function sectionShare(scores, section, subtypeShort) {
+  const { subtypes } = SECTIONS[section];
+  let total = 0;
+  for (const s of subtypes) total += scores[s] || 0;
+  if (total === 0) return 0;
+  return (scores[`${section}_${subtypeShort}`] || 0) / total;
+}
+
+function assignPrismType(scores) {
+  // Layer 1 — exact match on undisputed S1/S3/S7 winners
+  const w1 = strictWinner(scores, "S1");
+  const w3 = strictWinner(scores, "S3");
+  const w7 = strictWinner(scores, "S7");
+  if (w1 && w3 && w7) {
+    for (const [type, profile] of Object.entries(PRISM_TYPES)) {
+      if (profile.S1 === w1 && profile.S3 === w3 && profile.S7 === w7) {
+        return { type, layer: 1 };
+      }
     }
   }
 
-  // Layer 2 — nearest neighbour using all 7 sections
-  // Primary sections (S1, S3, S7) weighted at 2, supporting at 1
-  let bestType = null;
-  let bestScore = -1;
-
+  // Layer 2 — proportional similarity across all 7 sections
+  let bestType = null, bestScore = -1, bestPrimary = -1;
   for (const [type, profile] of Object.entries(PRISM_TYPES)) {
-    let matchScore = 0;
-    for (const s of PRIMARY_SECTIONS) {
-      if (profile[s] === actual[s]) matchScore += 2;
+    let total = 0, primary = 0;
+    for (const [section, cfg] of Object.entries(SECTIONS)) {
+      const share = sectionShare(scores, section, profile[section]);
+      total += cfg.weight * share;
+      if (PRIMARY_SECTIONS.includes(section)) primary += share;
     }
-    for (const s of SUPPORTING_SECTIONS) {
-      if (profile[s] === actual[s]) matchScore += 1;
-    }
-    if (matchScore > bestScore) {
-      bestScore = matchScore;
+    if (total > bestScore + 1e-9 ||
+        (Math.abs(total - bestScore) <= 1e-9 && primary > bestPrimary + 1e-9)) {
+      bestScore = total;
+      bestPrimary = primary;
       bestType = type;
     }
   }
-
   return { type: bestType, layer: 2 };
 }
 
@@ -93,14 +130,6 @@ exports.handler = async function (event) {
     const fields = body.data?.fields || [];
     const submissionId = body.data?.submissionId || "";
 
-    // Extract email
-    let email = "";
-    for (const field of fields) {
-      if (field.type === "INPUT_EMAIL") {
-        email = field.value || "";
-      }
-    }
-
     // Extract scores by label name
     const scores = {};
     for (const field of fields) {
@@ -112,18 +141,15 @@ exports.handler = async function (event) {
     console.log("Scores received:", JSON.stringify(scores));
     console.log("Submission ID:", submissionId);
 
-    // Score each section
-    const s1 = getPrimary(scores, ["S1_Initiator","S1_Sustainer","S1_Adapter","S1_Pauser"]);
-    const s2 = getPrimary(scores, ["S2_Linear","S2_Associative","S2_Layered","S2_Symbolic"]);
-    const s3 = getPrimary(scores, ["S3_Concrete","S3_Abstract","S3_Metaphorical","S3_Multidimensional"]);
-    const s4 = getPrimary(scores, ["S4_Seeker","S4_Filtered","S4_Sensitive","S4_Overwhelmed"]);
-    const s5 = getPrimary(scores, ["S5_Steady","S5_Reactive","S5_Hyperreactive","S5_Fluctuating"]);
-    const s6 = getPrimary(scores, ["S6_Absorber","S6_DeepFeeler","S6_Boundaried","S6_Interpreter"]);
-    const s7 = getPrimary(scores, ["S7_Integrator","S7_Improviser","S7_Experimenter","S7_Builder"]);
     const shadowLoad = getShadowLoad(scores);
-    const { type: prismType, layer: routingLayer } = assignPrismType(s1, s2, s3, s4, s5, s6, s7);
+    const { type: prismType, layer: routingLayer } = assignPrismType(scores);
 
-    console.log(`S1=${s1} S2=${s2} S3=${s3} S4=${s4} S5=${s5} S6=${s6} S7=${s7}`);
+    // Section winners for logging only ("mixed" = tied or empty section)
+    const winners = {};
+    for (const section of Object.keys(SECTIONS)) {
+      winners[section] = strictWinner(scores, section) || "mixed";
+    }
+    console.log("Section winners:", JSON.stringify(winners));
     console.log(`PrismType: ${prismType} | Layer: ${routingLayer} | ShadowLoad: ${shadowLoad}`);
 
     // Store result so preparing.html can find it via get-result
@@ -139,38 +165,9 @@ exports.handler = async function (event) {
       console.error("No submissionId in webhook payload — result not stored");
     }
 
-    const profileUrl = `${SITE_URL}/profile.html?type=${encodeURIComponent(prismType)}`;
-
-    // Send Brevo email
-    if (email && BREVO_API_KEY) {
-      const emailBody = {
-        sender: { name: "Prism", email: "gregg.chhavi@gmail.com" },
-        to: [{ email }],
-        subject: "Your Prism Profile is ready",
-        htmlContent: `<p>Your Prism profile is ready.</p><p><a href="${profileUrl}">View your Prism Profile →</a></p><p>Prism — mapping how you experience the world and the potential that unlocks.</p>`,
-        replyTo: { name: "Prism", email: "gregg.chhavi@gmail.com" },
-      };
-
-      const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "api-key": BREVO_API_KEY,
-        },
-        body: JSON.stringify(emailBody),
-      });
-
-      if (!brevoRes.ok) {
-        const err = await brevoRes.text();
-        console.error("Brevo error:", err);
-      } else {
-        console.log("Email sent to", email);
-      }
-    }
-
     return {
       statusCode: 200,
-      body: JSON.stringify({ prismType, routingLayer, s1, s2, s3, s4, s5, s6, s7, shadowLoad }),
+      body: JSON.stringify({ prismType, routingLayer, shadowLoad }),
     };
 
   } catch (err) {
