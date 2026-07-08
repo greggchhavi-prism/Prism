@@ -89,21 +89,13 @@
   .feedback-btn:hover { border-color: rgba(124,111,224,0.85); color: rgba(124,111,224,1); background: rgba(124,111,224,0.06); }
   .download-btn { display: inline-block; padding: 12px 28px; border: 1px solid rgba(255,255,255,0.15); border-radius: 100px; color: var(--text-muted); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; letter-spacing: 0.05em; text-decoration: none; transition: all 0.3s ease; cursor: pointer; background: transparent; }
   .download-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
-  .listen-bar { display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 28px; flex-wrap: wrap; }
-  .listen-bar[hidden] { display: none; }
-  .listen-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px; border: 1px solid rgba(124,111,224,0.4); border-radius: 100px; color: rgba(124,111,224,0.85); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; letter-spacing: 0.05em; background: transparent; cursor: pointer; transition: all 0.3s ease; }
-  .listen-btn:hover { border-color: rgba(124,111,224,0.85); color: rgba(124,111,224,1); background: rgba(124,111,224,0.06); }
-  .listen-btn[hidden] { display: none; }
-  .listen-speed { padding: 10px 14px; border: 1px solid rgba(255,255,255,0.15); border-radius: 100px; color: var(--text-muted); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; background: var(--bg); cursor: pointer; transition: border-color 0.3s ease; }
-  .listen-speed:hover { border-color: rgba(255,255,255,0.3); }
-  .listen-speed[hidden] { display: none; }
   .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s ease; }
   .reveal.visible { opacity: 1; transform: translateY(0); }
   @media (max-width: 640px) { .gifts-grid { grid-template-columns: 1fr; } }
   @media print {
     :root { --text: #000000; --text-muted: #333333; --text-dim: #555555; }
     body { background: white; color: black; }
-    .scroll-hint, .action-buttons, .feedback-section, .listen-bar { display: none; }
+    .scroll-hint, .action-buttons, .feedback-section { display: none; }
     .archetypes-section:not(.revealed) { display: none; }
     .archetype-btn { display: none; }
     .archetype-card { border: 1px solid #ddd; }
@@ -146,16 +138,6 @@
     <p class="prism-sublabel">Prism — mapping how you experience the world, and what that makes possible — <span class="fearless">Fearless & Undefined</span></p>
     <h1 class="type-name" id="typeName"></h1>
     <p class="mirror" id="mirror"></p>
-    <div class="listen-bar" id="listenBar" hidden>
-      <button class="listen-btn" id="listenToggle" aria-label="Hear your profile read aloud">▶&nbsp; Hear your profile</button>
-      <button class="listen-btn" id="listenStop" hidden aria-label="Stop reading">■&nbsp; Stop</button>
-      <select class="listen-speed" id="listenSpeed" hidden aria-label="Reading speed">
-        <option value="0.8">0.8×</option>
-        <option value="1" selected>1×</option>
-        <option value="1.15">1.15×</option>
-        <option value="1.3">1.3×</option>
-      </select>
-    </div>
     <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
   </div>
 
@@ -195,9 +177,9 @@
   </div>
 
   <div class="feedback-section reveal">
-    <p class="optin-text">Prism is a work in progress — and so is every map. If something resonated, or something felt off, we'd love to hear it. Your feedback comes with your anonymized results, so we can connect the dots.</p>
+    <p class="optin-text">If something resonated — or something felt off — we'd love to hear it.</p>
     <div class="action-buttons">
-      <a class="feedback-btn" id="feedbackBtn" href="#" target="_blank" rel="noopener">Yes, share my results and feedback →</a>
+      <a class="feedback-btn" id="feedbackBtn" href="#" target="_blank" rel="noopener">Share feedback →</a>
       <button class="download-btn" onclick="window.print()">Save your profile ↓</button>
     </div>
   </div>
@@ -318,9 +300,6 @@
         document.getElementById('archetypesSection').style.display = 'none';
       }
 
-      // Hear your profile — browser-native TTS
-      setupListen();
-
       // Show profile
       document.getElementById('loadingScreen').classList.add('hidden');
       setTimeout(() => {
@@ -332,137 +311,6 @@
         });
       }, 300);
     } catch(err) { showError(); }
-  }
-  /* ---- Hear your profile (browser-native speech synthesis) ---- */
-  const listen = { queue: [], index: 0, state: 'idle', rate: 1 };
-
-  function setupListen() {
-    if (!('speechSynthesis' in window)) return; // no support: button never appears
-    const bar = document.getElementById('listenBar');
-    const toggle = document.getElementById('listenToggle');
-    const stopBtn = document.getElementById('listenStop');
-    const speedSel = document.getElementById('listenSpeed');
-    bar.hidden = false;
-
-    toggle.addEventListener('click', () => {
-      if (listen.state === 'idle') startListen();
-      else if (listen.state === 'playing') pauseListen();
-      else if (listen.state === 'paused') resumeListen();
-    });
-    stopBtn.addEventListener('click', stopListen);
-    speedSel.addEventListener('change', () => {
-      listen.rate = parseFloat(speedSel.value);
-      if (listen.state === 'playing') { // restart current sentence at new speed
-        window.speechSynthesis.cancel();
-        speakCurrent();
-      }
-    });
-    window.addEventListener('beforeunload', () => window.speechSynthesis.cancel());
-    window.addEventListener('beforeprint', stopListen);
-  }
-
-  function buildQueue() {
-    const parts = [];
-    const push = t => { if (t && t.trim()) parts.push(t.trim()); };
-    push(document.getElementById('typeName').textContent);
-    push(document.getElementById('mirror').textContent);
-    push(document.getElementById('resonanceNote').textContent);
-    push('Your superpowers.');
-    document.querySelectorAll('#superpowersFacets .facet-card').forEach(c => {
-      push(c.querySelector('.facet-name').textContent + '.');
-      push(c.querySelector('.facet-text').textContent);
-    });
-    push('Your shadow sides.');
-    document.querySelectorAll('#shadowsFacets .facet-card').forEach(c => {
-      push(c.querySelector('.facet-name').textContent + '.');
-      push(c.querySelector('.facet-text').textContent);
-    });
-    push('Your world.');
-    push(document.querySelector('.gifts-subtitle').textContent);
-    document.querySelectorAll('.gift-card').forEach(c => {
-      push(c.querySelector('.gift-label').textContent + '.');
-      push(c.querySelector('.gift-text').textContent);
-    });
-    push('Your pattern travels.');
-    document.querySelectorAll('.travels-section .travels-text').forEach(p => push(p.textContent));
-    push(document.querySelector('.travels-prompt').textContent);
-    // Archetypes: spoken only if the person chose to reveal them
-    if (document.getElementById('archetypesSection').classList.contains('revealed')) {
-      push('Your archetypes.');
-      document.querySelectorAll('.archetype-card').forEach(c => {
-        push(c.querySelector('.archetype-name').textContent + '.');
-        push(c.querySelector('.archetype-bio').textContent);
-      });
-      const fn = document.querySelector('.archetype-footnote');
-      if (fn) push(fn.textContent);
-    }
-    // Split into sentences — short utterances avoid browser cutoffs and give clean pause points
-    const sentences = [];
-    parts.forEach(p => {
-      const m = p.match(/[^.!?]+[.!?]+["']?\s*/g);
-      if (m) m.forEach(x => sentences.push(x.trim()));
-      else sentences.push(p);
-    });
-    return sentences;
-  }
-
-  function speakCurrent() {
-    if (listen.index >= listen.queue.length) { stopListen(); return; }
-    const u = new SpeechSynthesisUtterance(listen.queue[listen.index]);
-    u.lang = 'en';
-    u.rate = listen.rate;
-    u.onend = () => {
-      if (listen.state !== 'playing') return;
-      listen.index++;
-      speakCurrent();
-    };
-    u.onerror = () => {
-      if (listen.state !== 'playing') return;
-      listen.index++;
-      speakCurrent();
-    };
-    window.speechSynthesis.speak(u);
-  }
-
-  function startListen() {
-    listen.queue = buildQueue();
-    listen.index = 0;
-    listen.state = 'playing';
-    updateListenUI();
-    window.speechSynthesis.cancel();
-    speakCurrent();
-  }
-  function pauseListen() {
-    // cancel-and-remember: reliable across mobile browsers where native pause is flaky
-    listen.state = 'paused';
-    window.speechSynthesis.cancel();
-    updateListenUI();
-  }
-  function resumeListen() {
-    listen.state = 'playing';
-    updateListenUI();
-    speakCurrent();
-  }
-  function stopListen() {
-    listen.state = 'idle';
-    listen.index = 0;
-    window.speechSynthesis.cancel();
-    updateListenUI();
-  }
-  function updateListenUI() {
-    const toggle = document.getElementById('listenToggle');
-    const stopBtn = document.getElementById('listenStop');
-    const speedSel = document.getElementById('listenSpeed');
-    if (listen.state === 'idle') {
-      toggle.innerHTML = '▶&nbsp; Hear your profile';
-      stopBtn.hidden = true; speedSel.hidden = true;
-    } else if (listen.state === 'playing') {
-      toggle.innerHTML = '❚❚&nbsp; Pause';
-      stopBtn.hidden = false; speedSel.hidden = false;
-    } else {
-      toggle.innerHTML = '▶&nbsp; Resume';
-      stopBtn.hidden = false; speedSel.hidden = false;
-    }
   }
 
   function showError() {
