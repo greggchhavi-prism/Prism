@@ -93,39 +93,78 @@
   .reveal.visible { opacity: 1; transform: translateY(0); }
   @media (max-width: 640px) { .gifts-grid { grid-template-columns: 1fr; } }
   @media print {
-    @page { margin: 16mm; }
-    :root { --text: #000000; --text-muted: #333333; --text-dim: #555555; }
+    @page { margin: 14mm; }
+    :root {
+      --text: #111111; --text-muted: #2b2b2b; --text-dim: #5a5a66;
+      --border: #d8d8e2;
+    }
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    body { background: white; color: black; }
+    body { background: #ffffff; color: #111111; }
     body::before, body::after { display: none; }
     .loading-screen, .error-screen { display: none !important; }
     .scroll-hint, .action-buttons, .feedback-section { display: none; }
     .container { max-width: 100%; padding: 0; opacity: 1; }
-    /* Hero: compact for the page, no forced full-height */
-    .zone-hit { min-height: auto; padding: 24px 0 40px; }
-    .prism-mark { animation: none; width: 52px; height: 52px; margin-bottom: 20px; }
-    .type-name { -webkit-text-fill-color: #7C6FE0; background: none; margin-bottom: 20px; }
-    .fearless { -webkit-text-fill-color: #3FA8A0; background: none; }
-    /* Keep every card whole — never split across pages */
+    .reveal { opacity: 1; transform: none; transition: none; }
+
+    /* Hero — compact, no forced full height */
+    .zone-hit { min-height: auto; padding: 8px 0 44px; }
+    .prism-mark { animation: none; width: 44px; height: 44px; margin-bottom: 22px; }
+    .prism-label { color: #5a5a66; margin-bottom: 14px; }
+    .prism-sublabel { font-size: 9pt; color: #2b2b2b; margin-bottom: 22px; }
+    .type-name { -webkit-text-fill-color: #6A5DD0; background: none; font-size: 46pt; margin-bottom: 22px; }
+    .fearless { -webkit-text-fill-color: #2E8B84; background: none; }
+    .mirror { font-size: 14pt; color: #111111; }
+    .resonance-note { color: #5a5a66; margin-bottom: 28px; }
+
+    /* Dividers — rules that actually show on paper */
+    .section-divider { color: #5B4FC4; margin-bottom: 24px; }
+    .section-divider::before, .section-divider::after { background: #d8d8e2; }
+
+    /* Nothing splits mid-card; headers stay with what follows */
     .facet-card, .gift-card, .archetype-card, .travels-prompt { break-inside: avoid; page-break-inside: avoid; }
-    /* Section headers stay with what follows */
     .section-divider, .gifts-header { break-after: avoid; page-break-after: avoid; break-inside: avoid; }
-    .facet-name, .gift-label, .archetype-name { break-after: avoid; }
+    .facet-name, .gift-label, .archetype-name { break-after: avoid; page-break-after: avoid; }
     p { orphans: 3; widows: 3; }
-    .section-gap { margin-bottom: 40px; }
-    .travels-section, .archetypes-section { margin-top: 40px; }
-    .facet-card { padding: 20px 24px; }
-    .facet-card.superpower { background: #f4f3fc; border-left: 3px solid #7C6FE0; }
-    .facet-card.shadow { background: #f0f8f7; border-left: 3px solid #3FA8A0; }
+
+    /* Superpowers + shadow sides */
+    .section-gap { margin-bottom: 26px; }
+    .facets { gap: 16px; margin-bottom: 26px; }
+    .facet-card { padding: 16px 20px; border-radius: 8px; }
+    .facet-card.superpower { background: #f5f4fd; border-left: 3px solid #7C6FE0; }
+    .facet-card.shadow { background: #eff8f7; border-left: 3px solid #3FA8A0; }
+    .facet-card.superpower .facet-name { color: #5B4FC4; }
+    .facet-card.shadow .facet-name { color: #2A7F79; }
+    .facet-text { color: #111111; font-size: 10.5pt; line-height: 1.6; }
+    /* Shadow sides open a fresh page */
+    .shadow-divider { break-before: page; page-break-before: always; margin-top: 0; }
+
+    /* Your world — light cards, whole section held together */
+    .zone-gifts { break-inside: avoid; page-break-inside: avoid; }
+    .gifts-header { margin-bottom: 18px; }
+    .gifts-title { font-size: 24pt; color: #111111; margin-bottom: 4px; }
+    .gifts-subtitle { color: #5a5a66; font-size: 9.5pt; }
+    .gifts-grid { gap: 10px; }
+    .gift-card { background: #ffffff; border: 1px solid #d8d8e2; border-radius: 8px; padding: 14px 16px; }
+    .gift-card::before { display: none; }
+    .gift-icon { font-size: 14px; color: #7C6FE0; margin-bottom: 6px; }
+    .gift-label { color: #5a5a66; margin-bottom: 6px; }
+    .gift-text { color: #111111; font-size: 10pt; line-height: 1.55; }
+
+    /* Your pattern travels */
+    .travels-section { max-width: 100%; margin-top: 26px; break-inside: avoid; page-break-inside: avoid; }
+    .travels-text { color: #2b2b2b; font-size: 10.5pt; line-height: 1.6; margin-bottom: 12px; }
+    .travels-text:last-of-type { margin-bottom: 16px; }
+    .travels-prompt { color: #111111; border-left: 2px solid #7C6FE0; font-size: 13pt; }
+
+    /* Archetypes — only if the person chose to reveal them */
+    .archetypes-section { max-width: 100%; margin-top: 26px; }
     .archetypes-section:not(.revealed) { display: none; }
     .archetype-btn { display: none; }
-    .archetype-card { border: 1px solid #ddd; }
-    .gift-card { border: 1px solid #ddd; padding: 20px 22px; }
-    .gift-card::before { display: none; }
-    .gifts-grid { gap: 12px; }
-    .travels-text { color: #444; }
-    .travels-prompt { color: black; border-left: 1px solid #7C6FE0; }
-    .reveal { opacity: 1; transform: none; transition: none; }
+    .archetypes-intro { color: #2b2b2b; font-size: 10.5pt; line-height: 1.6; margin-bottom: 16px; }
+    .archetype-card { background: #ffffff; border: 1px solid #d8d8e2; padding: 14px 18px; }
+    .archetype-name { color: #111111; font-size: 18pt; }
+    .archetype-bio { color: #2b2b2b; font-size: 10pt; line-height: 1.55; }
+    .archetype-footnote { color: #5a5a66; }
   }
 </style>
 </head>
@@ -164,7 +203,7 @@
     <p class="resonance-note" id="resonanceNote"></p>
     <div class="section-divider">Your superpowers</div>
     <div class="facets" id="superpowersFacets"></div>
-    <div class="section-divider">Your shadow sides</div>
+    <div class="section-divider shadow-divider">Your shadow sides</div>
     <div class="facets" id="shadowsFacets"></div>
   </div>
 
